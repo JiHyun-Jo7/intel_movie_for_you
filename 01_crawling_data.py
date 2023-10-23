@@ -79,6 +79,9 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 driver.back()
                 time.sleep(2)
 
-            df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,title),index=False)
+            if month < 10:
+                df_movies.to_csv('./crawling_data/movie_reviews_{}0{}_{}.csv'.format(year, month, title), index=False)
+            else :
+                df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,title),index=False)
             print('{}:save success'.format(title))
 
