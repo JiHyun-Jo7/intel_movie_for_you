@@ -74,7 +74,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
             else: print('{}: 이미 수집한 영화입니다.'.format(title))
 
             if movie == 30:
-                # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
+                # movie_reviews_(년도:00)(월:00).csv 로 저장
                 df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
                 print('{}{:0>2}: save success'.format(year, month))
 
