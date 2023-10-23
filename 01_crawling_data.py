@@ -19,8 +19,8 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=options)
 
 for year in range(18, 21):                        # 연도 별 url 반복문
-    url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
     for month in range(1, 13):                    # 월 별 url 반복문
+        url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
         month_url = url + '{}'.format(month).zfill(2)
         url = month_url
         driver.get(url)                           # 최종 url 불러오기
@@ -38,7 +38,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 titles.append(movie_data)
                 movie_data.click()
                 time.sleep(2)
-                print(title)
+                print(movie, title)
 
                 # 리뷰 탭으로 이동
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
