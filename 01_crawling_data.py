@@ -20,8 +20,6 @@ driver = webdriver.Chrome(service=service, options=options)
 
 for year in range(18, 21):                        # 연도 별 url 반복문
     url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
-    df_movies = pd.DataFrame()
-
     for month in range(1, 13):                    # 월 별 url 반복문
         month_url = url + '{}'.format(month).zfill(2)
         url = month_url
@@ -32,7 +30,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
             title = movie_data.text
             titles = []
             reviews = []
-
+            df_movies = pd.DataFrame()
             # 중복 영화 제거
             if title not in titles :
                 # 제목 크롤링 및 영화 상세 페이지로 이동
@@ -66,9 +64,8 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                             'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                         review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
                         # 내용 없는 리뷰 제거
-                        if review_data == '':
-                            pass
-                        reviews.append(review_data)
+                        if not review_data == '':
+                            reviews.append(review_data)
                 except: pass
 
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
