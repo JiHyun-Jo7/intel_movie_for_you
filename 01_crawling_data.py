@@ -77,6 +77,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 driver.back()
                 time.sleep(2)
 
+            # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
             df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}_{}.csv'.format(year, month, title), index=False)
             print('{}: save success'.format(title))
 
