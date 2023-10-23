@@ -32,9 +32,8 @@ for year in years:
         driver.get(url)
         time.sleep(2)
 
-        reviews = []
-        title = ''
         for movie in range(1, 31):
+            reviews = []
             movie_title = driver.find_element('xpath','//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
             title = movie_title.text
             if title not in titles:
@@ -58,21 +57,14 @@ for year in years:
                         reviews.append(review)
                     except:
                         print('Error {}{} movie {} {}th review'.format(year,month, movie, r))
-            if movie % 5 == 0:
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
                 df_movie_review['title'] = title
                 df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                 df_movies = df_movies.reindex(['title','review'],axis=1)
+            if movie % 5 == 0:
                 df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,movie),index=False)
-                reviews = []
 
             driver.back()
             time.sleep(2)
             driver.back()
             time.sleep(2)
-
-        df_movie_review = pd.DataFrame(reviews,columns=['review'])
-        df_movie_review['title'] = title
-        df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
-        df_movies = df_movies.reindex(['title', 'review'], axis=1)
-        df_movies.to_csv('./crawling_data/movie_reviews_{}{}_last.csv'.format(year, month), index=False)
