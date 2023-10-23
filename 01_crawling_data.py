@@ -7,7 +7,6 @@ import pandas as pd
 import re
 import time
 import datetime
-
 options = ChromeOptions()
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
 options.add_argument('user-agent=' + user_agent)
@@ -17,7 +16,7 @@ options.add_argument('lang=ko_KR')
 service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
-
+titles = []                                       # 영화 중복 제거 확인용 리스트 (초기화 X)
 for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
@@ -28,12 +27,11 @@ for year in range(18, 21):                        # 연도 별 url 반복문
         for movie in range (1, 31):               # 영화 페이지 불러오기
             movie_data = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
             title = movie_data.text
-            titles = []
             reviews = []
             df_movies = pd.DataFrame()
             # 중복 영화 제거
             if title not in titles :
-                # 제목 크롤링 및 영화 상세 페이지로 이동
+                # 제목 크롤링(특수 문자 제거) 및 영화 상세 페이지로 이동
                 title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
                 titles.append(movie_data)
                 movie_data.click()
@@ -79,9 +77,6 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 driver.back()
                 time.sleep(2)
 
-            if month < 10:
-                df_movies.to_csv('./crawling_data/movie_reviews_{}0{}_{}.csv'.format(year, month, title), index=False)
-            else :
-                df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,title),index=False)
-            print('{}:save success'.format(title))
+            df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}_{}.csv'.format(year, month, title), index=False)
+            print('{}: save success'.format(title))
 
