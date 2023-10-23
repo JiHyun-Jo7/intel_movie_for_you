@@ -39,13 +39,13 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
                 titles.append(movie_data)
                 movie_data.click()
-                time.sleep(3)
+                time.sleep(2)
                 print(title)
 
                 # 리뷰 탭으로 이동
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                 review_tap.click()
-                time.sleep(3)
+                time.sleep(2)
 
                 # 리뷰 수, 페이지 계산
                 review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
