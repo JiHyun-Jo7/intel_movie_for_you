@@ -17,8 +17,8 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
 
-titles = ['라이온 킹']                                       # 중복 확인을 위한 영화 list
-for year in range(19, 21):                        # 연도 별 url 반복문
+titles = []                                       # 중복 확인을 위한 영화 list
+for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
@@ -78,11 +78,12 @@ for year in range(19, 21):                        # 연도 별 url 반복문
                     df_movie_review['title'] = title
                     df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                     df_movies = df_movies.reindex(['title', 'review'], axis=1)
-                else:
+
+                else:                                       # 중복된 영화일 경우
                     print('{}: 이미 수집한 영화입니다.'.format(title))
                     time.sleep(2)
-                    if movie == 30: pass
-                    else: continue
+                    if movie == 30: pass                    # 마지막 영화일 경우 하단의 if문 실행
+                    else: continue                          # 아닐 경우 하단의 if 문 생략
 
                 if movie == 30:
                     # movie_reviews_(년도:00)(월:00).csv 로 저장
@@ -95,14 +96,12 @@ for year in range(19, 21):                        # 연도 별 url 반복문
                 driver.back()
                 time.sleep(2)
 
-            except:
+            except:                 # 영화가 없거나 오류가 있을 경우
                 print('movie error: {:0>2}. {}'.format(month, movie))
                 if movie == 30:
-                    # movie_reviews_(년도:00)(월:00).csv 로 저장
                     df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
                     print('{}{:0>2}: save success'.format(year, month))
 
-                    # 뒤로 가기 두번 실행
                     driver.back()
                     time.sleep(1)
                     driver.back()
