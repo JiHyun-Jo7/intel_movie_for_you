@@ -41,11 +41,11 @@ for year in range(18, 21):
 
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                 review_tap.click()
-                time.sleep(1)
+                time.sleep(2)
                 for more in range (5):
                     see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                     see_more.click()
-                    time.sleep(1)
+                    time.sleep(2)
                     try :
                         for review in range (1, 161) :
                             review_data = driver.find_element(
@@ -64,5 +64,5 @@ for year in range(18, 21):
                 driver.back()
                 time.sleep(2)
 
-        df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,movie),index=False)
+            df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,movie),index=False)
 
