@@ -30,11 +30,10 @@ for year in range(18, 21):
         month_url = year_url + '{}'.format(month)
 
         for movie in range (1, 31):
-            movie_data = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie)
+            movie_data = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong'.format(movie)
+            driver.find_element('xpath', movie_data).click()
             movie_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', movie_data)
             title.append(movie_data)
-
-            driver.find_element('xpath', movie_data).click()
             time.sleep(3)
             print('count = %d' % movie)
 
