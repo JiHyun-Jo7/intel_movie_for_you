@@ -20,8 +20,7 @@ driver = webdriver.Chrome(service=service, options=options)
 
 for year in range(18, 21):
     url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
-    df_title = pd.DataFrame()
-
+    df_movies = pd.DataFrame()
 
     for month in range(1, 13):
         month_url = url + '{}'.format(month).zfill(2)
@@ -55,6 +54,15 @@ for year in range(18, 21):
                             reviews.append(review_data)
                     except : pass
 
-                df_section_title = pd.DataFrame(titles, columns=['title'])
-                df_section_title['review'] = reviews
-                df_titles = pd.concat([df_title, df_section_title], ignore_index=True)
+                df_movie_review = pd.DataFrame(reviews, columns=['review'])
+                df_movie_review['title'] = title
+                df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
+                df_movies = df_movies.reindex(['title', 'review'], axis=1)
+
+                driver.back()
+                time.sleep(2)
+                driver.back()
+                time.sleep(2)
+
+        df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,movie),index=False)
+
