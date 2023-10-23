@@ -38,7 +38,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 titles.append(movie_data)
                 movie_data.click()
                 time.sleep(2)
-                print(movie, title)
+                print('{}. {}'.format(movie, title))
 
                 # 리뷰 탭으로 이동
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
@@ -50,7 +50,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 review_num = re.compile('[^0-9]').sub(' ', review_num)      # 숫자 데이터만 가져옴
                 review_page = ((int(review_num) - 10) // 30) + 1                 # 리뷰 페이지 수 계산
                 if review_page > 5: review_page = 5                              # 최대 페이지 수 제한
-                print(title, review_num, review_page)
+                print('리뷰 수:{}, 페이지:{}'.format(review_num, review_page))
 
                 # 리뷰 더보기 클릭 (최대 5회)
                 for more in range (review_page):
