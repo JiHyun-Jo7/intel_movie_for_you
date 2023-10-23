@@ -46,7 +46,7 @@ for year in years:
 
                 button_cnt = driver.find_element('xpath','//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
                 button_cnt = re.sub(r'[^0-9]','',button_cnt)
-                button_cnt = 1+int(button_cnt)//30 if 1+int(button_cnt)//30 < 5 else 5 # 총 리뷰 개수를 찾아서 리뷰 더보기 누를 횟수 계산
+                button_cnt = 1+(int(button_cnt)-10)//30 if 1+(int(button_cnt)-10)//30 < 5 else 5 # 총 리뷰 개수를 찾아서 리뷰 더보기 누를 횟수 계산
 
                 for i in range(button_cnt):
                     review_button = driver.find_element('xpath','//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button').click()
