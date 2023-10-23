@@ -16,32 +16,35 @@ options.add_argument('lang=ko_KR')
 service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
-titles = []                                       # 영화 중복 제거 확인용 리스트 (초기화 X)
+
+titles = []
+df_movies = pd.DataFrame()
+
 for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
         url = month_url
         driver.get(url)                           # 최종 url 불러오기
-        time.sleep(3)
+        time.sleep(2)
         for movie in range (1, 31):               # 영화 페이지 불러오기
             movie_data = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
             title = movie_data.text
             reviews = []
             df_movies = pd.DataFrame()
             # 중복 영화 제거
+            title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
             if title not in titles :
                 # 제목 크롤링(특수 문자 제거) 및 영화 상세 페이지로 이동
-                title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
-                titles.append(movie_data)
+                titles.append(title)
                 movie_data.click()
-                time.sleep(2)
+                time.sleep(1)
                 print('{}. {}'.format(movie, title))
 
                 # 리뷰 탭으로 이동
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                 review_tap.click()
-                time.sleep(2)
+                time.sleep(1)
 
                 # 리뷰 수, 페이지 계산
                 review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
@@ -74,11 +77,11 @@ for year in range(18, 21):                        # 연도 별 url 반복문
 
                 # 뒤로 가기 두번 실행
                 driver.back()
-                time.sleep(2)
+                time.sleep(1)
                 driver.back()
-                time.sleep(2)
+                time.sleep(1)
 
             # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
-            df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}_{}.csv'.format(year, month, title), index=False)
-            print('{}: save success'.format(title))
+        df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
+        print('{}{:0>2}: save success'.format(year, month))
 
