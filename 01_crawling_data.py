@@ -66,7 +66,6 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                             By.XPATH,
                             '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(
                                 review)).text
-                        print(review_data)
                         review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
                         # 지나치게 짧거나 중복 되는 리뷰 제거
                         if review_data not in reviews:
