@@ -18,7 +18,6 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=options)
 
 titles = []                                       # 중복 확인을 위한 영화 list
-
 for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
@@ -61,11 +60,10 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                     time.sleep(1)
                     # 리뷰 크롤링. 내용이 없는 리뷰는 pass
                 for review in range (1, int(review_num)+1) :
-                    review_data = driver.find_element(
-                        'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
+                    review_data = driver.find_element(By.XPATH, '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                     review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
                     # 지나치게 짧거나 중복 되는 리뷰 제거
-                    if review_data not in reviews :
+                    if review_data not in reviews:
                         if len(review_data) > 6:
                             reviews.append(review_data)
 
@@ -73,9 +71,9 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 df_movie_review['title'] = title
                 df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                 df_movies = df_movies.reindex(['title', 'review'], axis=1)
-            else : print('{}: 이미 수집한 영화입니다.'.format(title))
+            else: print('{}: 이미 수집한 영화입니다.'.format(title))
 
-            if movie == 30 :
+            if movie == 30:
                 # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
                 df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
                 print('{}{:0>2}: save success'.format(year, month))
