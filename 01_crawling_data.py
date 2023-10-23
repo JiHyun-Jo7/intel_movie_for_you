@@ -20,7 +20,7 @@ driver = webdriver.Chrome(service=service, options=options)
 
 for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
-        url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
+        url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
         url = month_url
         driver.get(url)                           # 최종 url 불러오기
