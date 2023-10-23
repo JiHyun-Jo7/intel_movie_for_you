@@ -24,23 +24,33 @@ driver = webdriver.Chrome(service=service, options=options)
 for year in range(18, 21):
     year_url = url + 'ranking/boxoffice/monthly?date=2023{}'.format(year)
     df_title = pd.DataFrame()
+    title = []
+    review = []
     for month in range(1, 13):
         month_url = year_url + '{}'.format(month)
+
         for movie in range (1, 31):
-            movie_temp = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie)
-            driver.find_element('xpath', movie_temp).click()
+            movie_data = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie)
+            movie_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', movie_data)
+            title.append(movie_data)
+
+            driver.find_element('xpath', movie_data).click()
             time.sleep(3)
             print('count = %d' % movie)
 
-            review_temp = '//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span'
-            driver.find_element('xpath', review_temp).click()
+            review_tap = '//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span'
+            driver.find_element('xpath', review_tap).click()
             for more in range (5):
-                more_temp = '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more)
-                driver.find_element('xpath', more_temp).click()
-
+                see_more = '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more)
+                driver.find_element('xpath', see_more).click()
             try :
                 for review in range (1, 161) :
                     review_data = driver.find_element(
                         'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
+                    review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
+                    title.append(review_data)
             except : pass
 
+            df_section_title = pd.DataFrame(title, columns=['title'])
+            df_section_title['review'] = review
+            df_titles = pd.concat([df_title, df_section_title], ignore_index=True)
