@@ -17,8 +17,7 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
 
-titles = []
-df_movies = pd.DataFrame()
+titles = []                                       # 중복 확인을 위한 영화 list
 
 for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
@@ -27,11 +26,11 @@ for year in range(18, 21):                        # 연도 별 url 반복문
         url = month_url
         driver.get(url)                           # 최종 url 불러오기
         time.sleep(2)
+        reviews = []
+        df_movies = pd.DataFrame()
         for movie in range (1, 31):               # 영화 페이지 불러오기
             movie_data = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
             title = movie_data.text
-            reviews = []
-            df_movies = pd.DataFrame()
             # 중복 영화 제거
             title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
             if title not in titles :
@@ -50,7 +49,9 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
                 review_num = re.compile('[^0-9]').sub(' ', review_num)      # 숫자 데이터만 가져옴
                 review_page = ((int(review_num) - 10) // 30) + 1                 # 리뷰 페이지 수 계산
-                if review_page > 5: review_page = 5                              # 최대 페이지 수 제한
+                if review_page > 5:
+                    review_page = 5                              # 최대 페이지 수 제한
+                    review_num = 160
                 print('리뷰 수:{}, 페이지:{}'.format(review_num, review_page))
 
                 # 리뷰 더보기 클릭 (최대 5회)
@@ -58,30 +59,29 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                     see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                     see_more.click()
                     time.sleep(1)
-                try:
                     # 리뷰 크롤링. 내용이 없는 리뷰는 pass
-                    for review in range (1, int(review_num)) :
-                        review_data = driver.find_element(
-                            'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
-                        review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
-                        # 지나치게 짧거나 중복 되는 리뷰 제거
-                        if review_data not in reviews :
-                            if len(review_data) > 6:
-                                reviews.append(review_data)
-                except: pass
+                for review in range (1, int(review_num)+1) :
+                    review_data = driver.find_element(
+                        'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
+                    review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
+                    # 지나치게 짧거나 중복 되는 리뷰 제거
+                    if review_data not in reviews :
+                        if len(review_data) > 6:
+                            reviews.append(review_data)
 
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
                 df_movie_review['title'] = title
                 df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                 df_movies = df_movies.reindex(['title', 'review'], axis=1)
+            else : print('{}: 이미 수집한 영화입니다.'.format(title))
 
-                # 뒤로 가기 두번 실행
-                driver.back()
-                time.sleep(1)
-                driver.back()
-                time.sleep(1)
+            if movie == 30 :
+                # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
+                df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
+                print('{}{:0>2}: save success'.format(year, month))
 
-            # movie_reviews_(년도:00)(월:00)_(영화명).csv 로 저장
-        df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
-        print('{}{:0>2}: save success'.format(year, month))
-
+            # 뒤로 가기 두번 실행
+            driver.back()
+            time.sleep(1)
+            driver.back()
+            time.sleep(1)
