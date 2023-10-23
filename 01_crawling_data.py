@@ -14,24 +14,29 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 options.add_argument('user-agent=' + user_agent)
 options.add_argument('lang=ko_KR')
 
-url = 'https://movie.daum.net/'
+
 
 # 크롬 드라이버 최신 버전 설정
 service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
 
+url = 'https://movie.daum.net/'
 for year in range(18, 21):
-    year_url = url + 'ranking/boxoffice/monthly?date=2023{}'.format(year)
+    year_url = url + 'ranking/boxoffice/monthly?date=20{}'.format(year)
+    url = year_url
     df_title = pd.DataFrame()
     title = []
     review = []
     for month in range(1, 13):
-        month_url = year_url + '{}'.format(month)
-
+        month_url = url + '{}'.format(month).zfill(2)
+        url = month_url
+        driver.get(url)
+        time.sleep(3)
         for movie in range (1, 31):
-            movie_data = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong'.format(movie)
-            driver.find_element('xpath', movie_data).click()
+            movie_data = '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie)
+            driver.find_element(By.XPATH, movie_data).click()
+            driver.get(url)
             movie_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', movie_data)
             title.append(movie_data)
             time.sleep(3)
