@@ -32,30 +32,38 @@ for year in range(18, 21):                        # 연도 별 url 반복문
             title = movie_data.text
             titles = []
             reviews = []
+
+            # 중복 영화 제거
             if title not in titles :
+                # 제목 크롤링 및 영화 상세 페이지로 이동
                 title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
                 titles.append(movie_data)
                 movie_data.click()
                 time.sleep(3)
                 print(title)
 
+                # 리뷰 탭으로 이동
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                 review_tap.click()
-                time.sleep(2)
+                time.sleep(3)
 
+                # 리뷰 페이지 수 계산
                 review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
                 review_num = re.compile('[^0-9]').sub(' ', review_num)
                 review_page = ((int(review_num) - 10) % 30) + 1
                 if review_page > 5: review_page = 5
+                # 리뷰 더보기 클릭
                 for more in range (review_page):
                     see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                     see_more.click()
-                    time.sleep(2)
+                    time.sleep(3)
                     try:
+                        # 리뷰 크롤링
                         for review in range (1, 161) :
                             review_data = driver.find_element(
                                 'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                             review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
+                            # 내용 없는 리뷰 제거
                             if review_data == '':
                                 pass
                             reviews.append(review_data)
