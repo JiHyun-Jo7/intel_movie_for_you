@@ -63,9 +63,10 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                         review_data = driver.find_element(
                             'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                         review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
-                        # 내용 없는 리뷰 제거
-                        if not review_data == '':
-                            reviews.append(review_data)
+                        # 지나치게 짧거나 중복 되는 리뷰 제거
+                        if review_data not in reviews :
+                            if len(review_data) > 6:
+                                reviews.append(review_data)
                 except: pass
 
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
@@ -79,4 +80,5 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 time.sleep(2)
 
             df_movies.to_csv('./crawling_data/movie_reviews_{}{}_{}.csv'.format(year,month,title),index=False)
+            print('{}:save success'.format(title))
 
