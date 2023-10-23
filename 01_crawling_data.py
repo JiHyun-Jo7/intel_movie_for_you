@@ -18,16 +18,16 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
 
-for year in range(18, 21):
+for year in range(18, 21):                        # 연도 별 url 반복문
     url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)
     df_movies = pd.DataFrame()
 
-    for month in range(1, 13):
+    for month in range(1, 13):                    # 월 별 url 반복문
         month_url = url + '{}'.format(month).zfill(2)
         url = month_url
-        driver.get(url)
+        driver.get(url)                           # 최종 url 불러오기
         time.sleep(3)
-        for movie in range (1, 31):
+        for movie in range (1, 31):         # 영화 페이지 불러오기
             movie_data = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
             title = movie_data.text
             titles = []
@@ -42,17 +42,24 @@ for year in range(18, 21):
                 review_tap = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                 review_tap.click()
                 time.sleep(2)
-                for more in range (5):
+
+                review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
+                review_num = re.compile('[^0-9]').sub(' ', review_num)
+                review_page = ((int(review_num) - 10) % 30) + 1
+                if review_page > 5: review_page = 5
+                for more in range (review_page):
                     see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                     see_more.click()
                     time.sleep(2)
-                    try :
+                    try:
                         for review in range (1, 161) :
                             review_data = driver.find_element(
                                 'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                             review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
+                            if review_data == '':
+                                pass
                             reviews.append(review_data)
-                    except : pass
+                    except: pass
 
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
                 df_movie_review['title'] = title
