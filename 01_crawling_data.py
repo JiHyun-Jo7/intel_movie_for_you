@@ -56,7 +56,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                     see_more.click()
                     time.sleep(1)
                 try:
-                    # 리뷰 크롤링
+                    # 리뷰 크롤링. 내용이 없는 리뷰는 pass
                     for review in range (1, int(review_num)) :
                         review_data = driver.find_element(
                             'xpath','/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
@@ -72,6 +72,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                 df_movies = df_movies.reindex(['title', 'review'], axis=1)
 
+                # 뒤로 가기 두번 실행
                 driver.back()
                 time.sleep(2)
                 driver.back()
