@@ -58,14 +58,21 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                     see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                     see_more.click()
                     time.sleep(1)
-                    # 리뷰 크롤링. 내용이 없는 리뷰는 pass
-                for review in range (1, int(review_num)+1) :
-                    review_data = driver.find_element(By.XPATH, '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
-                    review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
-                    # 지나치게 짧거나 중복 되는 리뷰 제거
-                    if review_data not in reviews:
-                        if len(review_data) > 6:
-                            reviews.append(review_data)
+
+                # 리뷰 크롤링. 내용이 없는 리뷰는 pass
+                for review in range(1, int(review_num)):
+                    try:
+                        review_data = driver.find_element(
+                            By.XPATH,
+                            '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(
+                                review)).text
+                        print(review_data)
+                        review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
+                        # 지나치게 짧거나 중복 되는 리뷰 제거
+                        if review_data not in reviews:
+                            if len(review_data) > 6:
+                                reviews.append(review_data)
+                    except: print('review error: {:0>2} {} {}'.format(month, title, review))
 
                 df_movie_review = pd.DataFrame(reviews, columns=['review'])
                 df_movie_review['title'] = title
