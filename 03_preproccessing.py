@@ -2,7 +2,7 @@ import pandas as pd
 from konlpy.tag import Okt
 import re
 
-df = pd.read_csv('./crawling_data/movie_reviews_total.csv')
+df = pd.read_csv('crawling_data/movie_reviews_total.csv')
 df.info()
 
 okt = Okt()
@@ -41,6 +41,9 @@ for review in df.review:
 
 df['cleaned_sentences'] = cleaned_sentences
 df = df[['title', 'cleaned_sentences']]       # review 항목 제거
+
+for i in range(len(df['title'])):             # 공백으로 이루어진 영화 항목 제거
+    df.iloc[i, 0] = df.iloc[i, 0].strip()
 print(df.head(10))
 
 df.to_csv('./crawling_data/cleaned_review.csv', index=False)
