@@ -23,14 +23,13 @@ for review in df.review:
         print(count / 10000, end='')
     review = re.sub('[^가-힣]', ' ', review)
     tokened_review = okt.pos(review, stem=True)
-    print(tokened_review)
+
 
     df_token = pd.DataFrame(tokened_review, columns=['word', 'class'])  # word = 단어, class = 품사
     # 명사, 동사, 형용사만 keep
     df_token = df_token[((df_token['class']=='Noun')|
                          (df_token['class']=='Verb')|
                          (df_token['class']=='Adjective'))]             # 조건 인덱싱
-    print(df_token.head())
 
     words = []
     for word in df_token.word:
