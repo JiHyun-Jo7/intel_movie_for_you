@@ -2,7 +2,7 @@ import pandas as pd
 from konlpy.tag import Okt
 import re
 
-df = pd.read_csv('crawling_data/movie_reviews_total.csv')
+df = pd.read_csv('./crawling_data/movie_reviews_total.csv')
 df.info()
 
 okt = Okt()
