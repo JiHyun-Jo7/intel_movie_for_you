@@ -21,7 +21,7 @@ df_movies = pd.DataFrame()
 titles = []  # 중복 확인을 위한 영화 list
 
 for year in range(18, 21):  # 연도 별 url 반복문
-    for month in range(7, 9):  # 월 별 url 반복문
+    for month in range(1, 13):  # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)  # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
         driver.get(month_url)  # 최종 url 불러오기
