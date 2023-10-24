@@ -22,9 +22,8 @@ for year in range(18, 21):                        # 연도 별 url 반복문
     for month in range(1, 13):                    # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)     # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
-        url = month_url
-        driver.get(url)                           # 최종 url 불러오기
-        time.sleep(2)
+        driver.get(month_url)                           # 최종 url 불러오기
+        time.sleep(1)
         reviews = []
         df_movies = pd.DataFrame()
         for movie in range (1, 31):               # 영화 페이지 불러오기
@@ -56,23 +55,24 @@ for year in range(18, 21):                        # 연도 별 url 반복문
 
                     # 리뷰 더보기 클릭 (최대 5회)
                     for more in range (review_page):
-                        see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
-                        see_more.click()
-                        time.sleep(1)
-
+                        try:
+                            see_more = driver.find_element(By.XPATH, '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
+                            see_more.click()
+                            time.sleep(0.8)
+                        except:
+                            print("review page error")
+                            pass
                     # 리뷰 크롤링. 내용이 없는 리뷰는 pass
                     for review in range(1, int(review_num)):
                         try:
-                            review_data = driver.find_element(
-                                By.XPATH,
-                                '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(
-                                    review)).text
+                            review_data = driver.find_element(By.XPATH, '/html/body/div[2]/main/article/div/div[2]/div[2]/div/div/div[2]/div/div/div/div[3]/ul[2]/li[{}]/div/p'.format(review)).text
                             review_data = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', review_data)
                             # 지나치게 짧거나 중복 되는 리뷰 제거
                             if review_data not in reviews:
                                 if len(review_data) > 6:
                                     reviews.append(review_data)
-                        except: print('review error: {:0>2} {} {}'.format(month, title, review))
+                        except:
+                            print('review error: {:0>2} {} {}'.format(month, title, review))
 
                     df_movie_review = pd.DataFrame(reviews, columns=['review'])
                     df_movie_review['title'] = title
@@ -81,7 +81,7 @@ for year in range(18, 21):                        # 연도 별 url 반복문
 
                 else:                                       # 중복된 영화일 경우
                     print('{}: 이미 수집한 영화입니다.'.format(title))
-                    time.sleep(2)
+                    time.sleep(1)
                     if movie == 30: pass                    # 마지막 영화일 경우 하단의 if문 실행
                     else: continue                          # 아닐 경우 하단의 if 문 생략
 
@@ -94,10 +94,14 @@ for year in range(18, 21):                        # 연도 별 url 반복문
                 driver.back()
                 time.sleep(1)
                 driver.back()
-                time.sleep(2)
+                time.sleep(1)
 
             except:                 # 영화가 없거나 오류가 있을 경우
                 print('movie error: {:0>2}. {}'.format(month, movie))
                 if movie == 30:
                     df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
                     print('{}{:0>2}: save success'.format(year, month))
+                driver.back()
+                time.sleep(1)
+
+driver.quit()
