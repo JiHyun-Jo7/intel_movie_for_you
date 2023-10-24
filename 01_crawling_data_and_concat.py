@@ -79,10 +79,10 @@ for year in range(18, 21):  # 연도 별 url 반복문
                         except:
                             print('review error: {:0>2} {} {}'.format(month, title, review))
                     total_reviews.append(reviews)
-                    df_movie_review = pd.DataFrame(total_reviews, columns=['total_review'])
+                    df_movie_review = pd.DataFrame(total_reviews, columns=['review'])
                     df_movie_review['title'] = title
                     df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
-                    df_movies = df_movies.reindex(['title', 'total_review'], axis=1)
+                    df_movies = df_movies.reindex(['title', 'review'], axis=1)
                 else:                                       # 중복된 영화일 경우
                     print('{}: 이미 수집한 영화입니다.'.format(title))
                     time.sleep(1)
