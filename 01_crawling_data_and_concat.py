@@ -30,9 +30,7 @@ for year in range(18, 21):  # 연도 별 url 반복문
             try:
                 reviews = ''
                 total_reviews = []
-                movie_data = driver.find_element(By.XPATH,
-                                                 '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(
-                                                     movie))
+                movie_data = driver.find_element(By.XPATH, '//*[@id="mainContent"]/div/div[2]/ol/li[{}]/div/div[2]/strong/a'.format(movie))
                 title = movie_data.text
                 # 중복 영화 제거
                 title = re.compile('[^가-힣|a-z|A-Z|0-9]').sub(' ', title)
@@ -44,14 +42,12 @@ for year in range(18, 21):  # 연도 별 url 반복문
                     print('{}. {}'.format(movie, title))
 
                     # 리뷰 탭으로 이동
-                    review_tap = driver.find_element(By.XPATH,
-                                                     '//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
+                    review_tap = driver.find_element(By.XPATH, '//*[@id="mainContent"]/div/div[2]/div[1]/ul/li[4]/a/span')
                     review_tap.click()
                     time.sleep(1)
 
                     # 리뷰 수, 페이지 계산
-                    review_num = driver.find_element(By.XPATH,
-                                                     '//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
+                    review_num = driver.find_element(By.XPATH,'//*[@id="mainContent"]/div/div[2]/div[2]/div/strong/span').text
                     review_num = re.compile('[^0-9]').sub(' ', review_num)  # 숫자 데이터만 가져옴
                     review_page = ((int(review_num) - 10) // 30) + 1  # 리뷰 페이지 수 계산
                     if review_page > 5:
@@ -62,9 +58,7 @@ for year in range(18, 21):  # 연도 별 url 반복문
                     # 리뷰 더보기 클릭 (최대 5회)
                     for more in range(review_page):
                         try:
-                            see_more = driver.find_element(By.XPATH,
-                                                           '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(
-                                                               more))
+                            see_more = driver.find_element(By.XPATH,'//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(more))
                             see_more.click()
                             time.sleep(0.8)
                         except:
