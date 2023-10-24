@@ -20,7 +20,7 @@ for review in df.review:
     if count % 1000 == 0:
         print()
     if count % 10000 == 0:
-        print(count / 10000, end='')
+        print(count / 10000)
     review = re.sub('[^가-힣]', ' ', review)
     tokened_review = okt.pos(review, stem=True)
 
