@@ -101,5 +101,5 @@ for year in range(18, 21):  # 연도 별 url 반복문
                 time.sleep(1)
 
 driver.quit()
-df_movies.to_csv('./crawling_data/movie_reviews_test.csv', index=False)
+df_movies.to_csv('./crawling_data/movie_reviews_201801_202012.csv', index=False)
 print('test: save success')
