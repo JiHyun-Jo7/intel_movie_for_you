@@ -9,9 +9,18 @@ okt = Okt()
 
 df_stopwords = pd.read_csv('./stopwords.csv')
 stopwords = list(df_stopwords['stopword'])
-cleaned_sentences = []
 
-for review in df.review[:10]:
+count = 0
+cleaned_sentences = []
+# 진행 상황 확인용
+for review in df.review:
+    count += 1
+    if count % 10 == 0:
+        print('.', end='')
+    if count % 100 == 0:
+        print()
+    if count % 1000 == 0:
+        print(count / 1000, end='')
     review = re.sub('[^가-힣]', ' ', review)
     tokened_review = okt.pos(review, stem=True)
     print(tokened_review)
@@ -31,6 +40,8 @@ for review in df.review[:10]:
     cleaned_sentence = ' '.join(words)
     cleaned_sentences.append(cleaned_sentence)
 
-df_test = df.iloc[:10, :]
-df_test['cleaned_sentences'] = cleaned_sentences
-print(df_test.head(10))
+df['cleaned_sentences'] = cleaned_sentences
+df = df[['title', 'cleaned_sentences']]       # review 항목 제거
+print(df.head(10))
+
+df.to_csv('./crawling_data/cleaned_review.csv', index=False)
