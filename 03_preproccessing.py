@@ -15,11 +15,11 @@ cleaned_sentences = []
 # 진행 상황 확인용
 for review in df.review:
     count += 1
-    if count % 10 == 0:
-        print('.', end='')
     if count % 100 == 0:
-        print()
+        print('.', end='')
     if count % 1000 == 0:
+        print()
+    if count % 10000 == 0:
         print(count / 1000, end='')
     review = re.sub('[^가-힣]', ' ', review)
     tokened_review = okt.pos(review, stem=True)
