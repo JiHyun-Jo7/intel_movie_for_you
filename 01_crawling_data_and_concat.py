@@ -1,8 +1,8 @@
 from selenium import webdriver  # 웹사이트(및 웹 애플리케이션)의 유효성 검사에 사용되는 자동화 테스트 프레임워크
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import re
 import time
@@ -17,15 +17,15 @@ service = ChromeService(executble_path=ChromeDriverManager().install())
 # 크롬 드라이버
 driver = webdriver.Chrome(service=service, options=options)
 
+df_movies = pd.DataFrame()
 titles = []  # 중복 확인을 위한 영화 list
+
 for year in range(18, 21):  # 연도 별 url 반복문
-    for month in range(1, 13):  # 월 별 url 반복문
+    for month in range(7, 9):  # 월 별 url 반복문
         url = 'https://movie.daum.net/ranking/boxoffice/monthly?date=20{}'.format(year)  # url 초기화
         month_url = url + '{}'.format(month).zfill(2)
-        url = month_url
-        driver.get(url)  # 최종 url 불러오기
-        time.sleep(2)
-        df_movies = pd.DataFrame()
+        driver.get(month_url)  # 최종 url 불러오기
+        time.sleep(1)
         for movie in range(1, 31):  # 영화 페이지 불러오기
             try:
                 reviews = ''
@@ -61,14 +61,17 @@ for year in range(18, 21):  # 연도 별 url 반복문
 
                     # 리뷰 더보기 클릭 (최대 5회)
                     for more in range(review_page):
-                        see_more = driver.find_element(By.XPATH,
-                                                       '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(
-                                                           more))
-                        see_more.click()
-                        time.sleep(1)
-
+                        try:
+                            see_more = driver.find_element(By.XPATH,
+                                                           '//*[@id="alex-area"]/div/div/div/div[3]/div[1]/button'.format(
+                                                               more))
+                            see_more.click()
+                            time.sleep(0.8)
+                        except:
+                            print("review page error")
+                            pass
                     # 리뷰 크롤링. 내용이 없는 리뷰는 pass
-                    for review in range(1, int(review_num)):
+                    for review in range(1, int(review_num)):        # int(review_num)
                         try:
                             review_data = driver.find_element(
                                 By.XPATH,
@@ -86,26 +89,23 @@ for year in range(18, 21):  # 연도 별 url 반복문
                     df_movie_review['title'] = title
                     df_movies = pd.concat([df_movies, df_movie_review], ignore_index=True)
                     df_movies = df_movies.reindex(['title', 'total_review'], axis=1)
-
                 else:                                       # 중복된 영화일 경우
                     print('{}: 이미 수집한 영화입니다.'.format(title))
-                    time.sleep(2)
+                    time.sleep(1)
                     if movie == 30: pass                    # 마지막 영화일 경우 하단의 if문 실행
                     else: continue                          # 아닐 경우 하단의 if 문 생략
 
-                if movie == 30:
-                    # movie_reviews_(년도:00)(월:00).csv 로 저장
-                    df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
-                    print('{}{:0>2}: save success'.format(year, month))
-
-                # 뒤로 가기 두번 실행
+                # 창 종료
                 driver.back()
                 time.sleep(1)
                 driver.back()
-                time.sleep(2)
+                time.sleep(1)
 
             except:                 # 영화가 없거나 오류가 있을 경우
                 print('movie error: {:0>2}. {}'.format(month, movie))
-                if movie == 30:
-                    df_movies.to_csv('./crawling_data/movie_reviews_{}{:0>2}.csv'.format(year, month), index=False)
-                    print('{}{:0>2}: save success'.format(year, month))
+                driver.back()
+                time.sleep(1)
+
+driver.quit()
+df_movies.to_csv('./crawling_data/movie_reviews_test.csv', index=False)
+print('test: save success')
