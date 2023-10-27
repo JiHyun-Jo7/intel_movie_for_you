@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 
-form_window = uic.loadUiType('./cat_and_dog/cats_and_dogs.ui')[0]
+form_window = uic.loadUiType('./movie_recommendation.ui')[0]
 class Exam(QWidget, form_window):           # 클래스 생성
     def __init__(self):
         super().__init__()                  # 부모 클래스
