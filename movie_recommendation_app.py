@@ -9,6 +9,9 @@ class Exam(QWidget, form_window):           # 클래스 생성
         self.setupUi(self)
 
 
+
+
+
 if __name__ == '__main__':                  # 메인
     app = QApplication(sys.argv)            # 객체 생성
     MainWindow = Exam()
