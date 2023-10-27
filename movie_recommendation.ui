@@ -49,16 +49,6 @@
      <pointsize>14</pointsize>
     </font>
    </property>
-   <item>
-    <property name="text">
-     <string>영화1</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>영화2</string>
-    </property>
-   </item>
   </widget>
   <widget class="QPushButton" name="btn_recommendation">
    <property name="geometry">
