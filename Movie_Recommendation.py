@@ -47,7 +47,7 @@ with open('./models/tfidf.pickle', 'rb') as f:
 #     print(sentence)
 #     sentence_vec = Tfidf.transform([sentence])
 #     cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
-#     recommendation = getReccomendation(cosin_sim)
+#     recommendation = getRecomendation(cosin_sim)
 #     print(recommendation)
 # except:
 #     print('다른 키워드를 입력하세요')

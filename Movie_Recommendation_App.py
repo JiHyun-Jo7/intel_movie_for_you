@@ -9,7 +9,7 @@ import pickle
 from PyQt5.QtCore import QStringListModel
 from gensim.models import Word2Vec
 
-form_window = uic.loadUiType('./movie_recommendation.ui')[0]
+form_window = uic.loadUiType('./Movie_Recommendation.ui')[0]
 class Exam(QWidget, form_window):           # 클래스 생성
     def __init__(self):
         super().__init__()  # 부모 클래스
@@ -24,13 +24,49 @@ class Exam(QWidget, form_window):           # 클래스 생성
         self.titles.sort()                  # 오름차순 정렬
         for title in self.titles:
             self.comboBox.addItem(title)   # comboBox에 title 추가
+
+        # 제목 검색 자동 완성 기능
+        model = QStringListModel()
+        model.setStringList(self.titles)
+        completer = QCompleter()
+        completer.setModel(model)
+        self.le_keyword.setCompleter(completer)
+
         self.comboBox.currentIndexChanged.connect(self.comboBox_slot)
         self.btn_recommendation.clicked.connect(self.btn_slot)
 
     def btn_slot(self):
-        title = self.le_keyword.text()
-        recommendation = self.recommendation_by_movie_title(title)
-        self.lbl_recommendation.setText(recommendation)
+        keyword = self.le_keyword.text()
+        if keyword in self.titles:
+            recommendation = self.recommendation_by_movie_title(keyword)
+            self.lbl_recommendation.setText(recommendation)
+        else :
+            recommendation = self.recommendation_by_keyword(keyword)
+            self.lbl_recommendation.setText(recommendation)
+    def recommendation_by_keyword(self, keyword):
+        try:
+            sim_word = self.embedding_model.wv.most_similar(keyword, topn=10)
+            print(sim_word)
+            words = [keyword]
+            for word, _ in sim_word:
+                words.append(word)
+            print(words)
+
+            sentence = []
+            count = 10
+            for word in words:
+                sentence = sentence + [word] * count
+                count -= 1
+            sentence = ' '.join(sentence)
+            print(sentence)
+            sentence_vec = self.Tfidf.transform([sentence])
+            print('debug1')
+            cosin_sim = linear_kernel(sentence_vec, self.Tfidf_matrix)
+            print('debug2')
+            recommendation = self.getRecommendation(cosin_sim)
+            return recommendation
+        except:
+            return '다른 키워드를 입력하세요'
 
     def comboBox_slot(self):
         title = self.comboBox.currentText()
