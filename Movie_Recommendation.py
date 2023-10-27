@@ -6,7 +6,7 @@ from konlpy.tag import Okt
 import re
 from gensim.models import Word2Vec
 
-def getReccomendation(cosine_sim):
+def getRecommendation(cosine_sim):
     simScore = list(enumerate(cosine_sim[-1]))
     simScore = sorted(simScore, key = lambda x:x[1], reverse=True)
     simScore = simScore[:11]
@@ -47,7 +47,7 @@ with open('./models/tfidf.pickle', 'rb') as f:
 #     print(sentence)
 #     sentence_vec = Tfidf.transform([sentence])
 #     cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
-#     recommendation = getRecomendation(cosin_sim)
+#     recommendation = getRecommendation(cosin_sim)
 #     print(recommendation)
 # except:
 #     print('다른 키워드를 입력하세요')
@@ -91,5 +91,5 @@ sentence = ' '.join(sentence)
 print(sentence)
 sentence_vec = Tfidf.transform([sentence])
 cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
-recommendation = getRecomendation(cosin_sim)
+recommendation = getRecommendation(cosin_sim)
 print(recommendation)
