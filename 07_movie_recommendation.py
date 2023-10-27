@@ -29,3 +29,23 @@ with open('./models/tfidf.pickle', 'rb') as f:
 
 # keyword 기반 영화 추천
 embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')
+keyword = '판타지'
+sim_word = embedding_model.wv.most_similar(keyword, topn=10)
+print(sim_word)
+
+words = [keyword]
+for word, _ in sim_word:
+    words.append(word)
+print(words)
+
+sentence = []
+count = 10
+for word in words:
+    sentence = sentence + [word] * count
+    count -= 1
+sentence = ' '.join(sentence)
+print(sentence)
+sentence_vec = Tfidf.transform([sentence])
+cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
+recommendation = getReccomendation(cosin_sim)
+print(recommendation)
