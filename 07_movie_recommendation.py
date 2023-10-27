@@ -27,25 +27,28 @@ with open('./models/tfidf.pickle', 'rb') as f:
 # recommendation = getReccomendation(cosine_sim)
 # print(recommendation)
 
-# keyword 기반 영화 추천
-embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')
-keyword = '판타지'
-sim_word = embedding_model.wv.most_similar(keyword, topn=10)
-print(sim_word)
 
-words = [keyword]
-for word, _ in sim_word:
-    words.append(word)
-print(words)
+embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')    # keyword 기반 영화 추천
+keyword = ''
+try:
+    sim_word = embedding_model.wv.most_similar(keyword, topn=10)
+    print(sim_word)
 
-sentence = []
-count = 10
-for word in words:
-    sentence = sentence + [word] * count
-    count -= 1
-sentence = ' '.join(sentence)
-print(sentence)
-sentence_vec = Tfidf.transform([sentence])
-cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
-recommendation = getReccomendation(cosin_sim)
-print(recommendation)
+    words = [keyword]
+    for word, _ in sim_word:
+        words.append(word)
+    print(words)
+
+    sentence = []
+    count = 10
+    for word in words:
+        sentence = sentence + [word] * count
+        count -= 1
+    sentence = ' '.join(sentence)
+    print(sentence)
+    sentence_vec = Tfidf.transform([sentence])
+    cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
+    recommendation = getReccomendation(cosin_sim)
+    print(recommendation)
+except:
+    print('다른 키워드를 입력하세요')
