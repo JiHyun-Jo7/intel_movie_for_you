@@ -25,32 +25,31 @@ class Exam(QWidget, form_window):           # 클래스 생성
         for title in self.titles:
             self.comboBox.addItem(title)   # comboBox에 title 추가
         self.comboBox.currentIndexChanged.connect(self.comboBox_slot)
+        self.btn_recommendation.clicked.connect(self.btn_slot)
+
+    def btn_slot(self):
+        title = self.le_keyword.text()
+        recommendation = self.recommendation_by_movie_title(title)
+        self.lbl_recommendation.setText(recommendation)
 
     def comboBox_slot(self):
         title = self.comboBox.currentText()
         recommendation = self.recommendation_by_movie_title(title)
-
-        print('combo')
         self.lbl_recommendation.setText(recommendation)
 
     def recommendation_by_movie_title(self, title):
-        print(title)
         movie_idx = self.df_reviews[self.df_reviews['title']==title].index[0]
-        print(movie_idx)
         cosine_sim = linear_kernel(self.Tfidf_matrix[movie_idx], self.Tfidf_matrix)
         recommendation = self.getRecommendation(cosine_sim)
-        print(recommendation)
         return recommendation
 
     def getRecommendation(self, cosine_sim):
-        print('debug01')
         simScore = list(enumerate(cosine_sim[-1]))
         simScore = sorted(simScore, key=lambda x: x[1], reverse=True)
         simScore = simScore[:11]
         movieIdx = [i[0] for i in simScore]
         recMovieList = self.df_reviews.iloc[movieIdx, 0]
         recMovieList = '\n'.join(recMovieList[1:])
-        print(recMovieList)
         return recMovieList
 
 if __name__ == '__main__':                  # 메인
