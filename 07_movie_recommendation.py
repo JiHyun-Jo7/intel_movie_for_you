@@ -52,8 +52,8 @@ with open('./models/tfidf.pickle', 'rb') as f:
 # except:
 #     print('다른 키워드를 입력하세요')
 
-# 문장 기반 영화 추천
-sentence = '화려한 액션과 소름 돋는 반전이 있는 영화'
+
+sentence = '화려한 액션과 소름 돋는 반전이 있는 영화'        # 문장 기반 영화 추천
 
 okt = Okt()
 
@@ -77,7 +77,7 @@ for word in df_token.word:
             words.append(word)
 cleaned_sentence = ' '.join(words)
 cleaned_sentences.append(cleaned_sentence)
-print(cleaned_sentences)
+print(cleaned_sentences)                            # ~ 문장 전처리
 
 embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')
 keyword = cleaned_sentences
