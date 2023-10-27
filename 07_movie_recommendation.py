@@ -27,28 +27,69 @@ with open('./models/tfidf.pickle', 'rb') as f:
 # recommendation = getReccomendation(cosine_sim)
 # print(recommendation)
 
+# embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')    # keyword 기반 영화 추천
+# keyword = '로맨스'
+# try:
+#     sim_word = embedding_model.wv.most_similar(keyword, topn=10)
+#     print(sim_word)
+#
+#     words = [keyword]
+#     for word, _ in sim_word:
+#         words.append(word)
+#     print(words)
+#
+#     sentence = []
+#     count = 10
+#     for word in words:
+#         sentence = sentence + [word] * count
+#         count -= 1
+#     sentence = ' '.join(sentence)
+#     print(sentence)
+#     sentence_vec = Tfidf.transform([sentence])
+#     cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
+#     recommendation = getReccomendation(cosin_sim)
+#     print(recommendation)
+# except:
+#     print('다른 키워드를 입력하세요')
 
-embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')    # keyword 기반 영화 추천
-keyword = ''
-try:
-    sim_word = embedding_model.wv.most_similar(keyword, topn=10)
-    print(sim_word)
+# 문장 기반 영화 추천
+sentence = '화려한 액션과 소름 돋는 반전이 있는 영화'
 
-    words = [keyword]
-    for word, _ in sim_word:
-        words.append(word)
-    print(words)
+okt = Okt()
 
-    sentence = []
-    count = 10
-    for word in words:
-        sentence = sentence + [word] * count
-        count -= 1
-    sentence = ' '.join(sentence)
-    print(sentence)
-    sentence_vec = Tfidf.transform([sentence])
-    cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
-    recommendation = getReccomendation(cosin_sim)
-    print(recommendation)
-except:
-    print('다른 키워드를 입력하세요')
+df_stopwords = pd.read_csv('./stopwords.csv')
+stopwords = list(df_stopwords['stopword'])
+
+sentence = re.sub('[^가-힣|0-9]', ' ', sentence)
+tokened_sentence = okt.pos(sentence, stem=True)
+
+df_token = pd.DataFrame(tokened_sentence, columns=['word', 'class'])  # word = 단어, class = 품사
+# 명사, 동사, 형용사만 keep
+df_token = df_token[((df_token['class']=='Noun')|
+                     (df_token['class']=='Verb')|
+                     (df_token['class']=='Adjective'))]
+
+words = []
+cleaned_sentences = []
+for word in df_token.word:
+    if 1 < len(word):
+        if word not in stopwords:
+            words.append(word)
+cleaned_sentence = ' '.join(words)
+cleaned_sentences.append(cleaned_sentence)
+print(cleaned_sentences)
+
+embedding_model = Word2Vec.load('./models/word2vec_movie_review.model')
+keyword = cleaned_sentences
+
+sentence = []
+count = 10
+for word in words:
+    sentence = sentence + [word] * count
+    count -= 1
+sentence = ' '.join(sentence)
+print(sentence)
+sentence_vec = Tfidf.transform([sentence])
+cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
+recommendation = getReccomendation(cosin_sim)
+print(recommendation)
