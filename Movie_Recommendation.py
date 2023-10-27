@@ -53,7 +53,7 @@ with open('./models/tfidf.pickle', 'rb') as f:
 #     print('다른 키워드를 입력하세요')
 
 
-sentence = '화려한 액션과 소름 돋는 반전이 있는 영화'        # 문장 기반 영화 추천
+sentence = '영상이 예쁜 판타지 영화'        # 문장 기반 영화 추천
 
 okt = Okt()
 
@@ -88,7 +88,6 @@ for word in words:
     sentence = sentence + [word] * count
     count -= 1
 sentence = ' '.join(sentence)
-print(sentence)
 sentence_vec = Tfidf.transform([sentence])
 cosin_sim = linear_kernel(sentence_vec, Tfidf_matrix)
 recommendation = getRecommendation(cosin_sim)

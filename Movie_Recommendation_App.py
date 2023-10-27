@@ -37,12 +37,15 @@ class Exam(QWidget, form_window):           # 클래스 생성
 
     def btn_slot(self):
         keyword = self.le_keyword.text()
-        if keyword in self.titles:
-            recommendation = self.recommendation_by_movie_title(keyword)
-            self.lbl_recommendation.setText(recommendation)
-        else :
-            recommendation = self.recommendation_by_keyword(keyword)
-            self.lbl_recommendation.setText(recommendation)
+        self.le_keyword.setText('')             # 영화 추천 받은 후 검색창에서 검색어 삭제
+        if keyword :                            # 키워드가 입력됐을 때만 작동하도록
+            if keyword in self.titles:
+                recommendation = self.recommendation_by_movie_title(keyword)
+                self.lbl_recommendation.setText(recommendation)
+            else :
+                recommendation = self.recommendation_by_keyword(keyword)
+                self.lbl_recommendation.setText(recommendation)
+
     def recommendation_by_keyword(self, keyword):
         try:
             sim_word = self.embedding_model.wv.most_similar(keyword, topn=10)
@@ -60,9 +63,7 @@ class Exam(QWidget, form_window):           # 클래스 생성
             sentence = ' '.join(sentence)
             print(sentence)
             sentence_vec = self.Tfidf.transform([sentence])
-            print('debug1')
             cosin_sim = linear_kernel(sentence_vec, self.Tfidf_matrix)
-            print('debug2')
             recommendation = self.getRecommendation(cosin_sim)
             return recommendation
         except:

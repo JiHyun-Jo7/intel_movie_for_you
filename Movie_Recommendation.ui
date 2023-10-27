@@ -82,10 +82,29 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QLineEdit" name="le_keyword"/>
+     <widget class="QLineEdit" name="le_keyword">
+      <property name="font">
+       <font>
+        <family>돋움</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>제목 또는 검색 키워드를 입력하세요</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QPushButton" name="btn_recommendation">
+      <property name="font">
+       <font>
+        <family>돋움</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>추천</string>
       </property>
